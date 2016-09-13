@@ -26,6 +26,7 @@
             this.listView1 = new System.Windows.Forms.ListView();
             this.Name1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.Description = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.PublicationCount = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.label1 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
             this.logout = new System.Windows.Forms.Button();
@@ -38,7 +39,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.Name1,
-            this.Description});
+            this.Description, this.PublicationCount});
             this.listView1.Location = new System.Drawing.Point(12, 48);
             this.listView1.Name = "listView1";
             this.listView1.Size = new System.Drawing.Size(260, 201);
@@ -55,6 +56,11 @@
             // 
             this.Description.Text = "Description";
             this.Description.Width = 300;
+
+            // Description
+            // 
+            this.PublicationCount.Text = "Publications";
+            this.PublicationCount.Width = 100;
             // 
             // label1
             // 
@@ -110,6 +116,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ColumnHeader Name1;
         private System.Windows.Forms.ColumnHeader Description;
+        private System.Windows.Forms.ColumnHeader PublicationCount;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button logout;
     }

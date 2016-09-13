@@ -7,6 +7,7 @@ using journals.commons.Model.Entities;
 using journals.commons.SimpleInjector;
 using journals.commons.Util.Redis;
 using Journals.Client.Model;
+using Journals.Client.Model.View;
 
 namespace Journals.Client {
     public partial class JournalForm : Form, ISingletonComponent, IEventListener<RefreshJournalsEvent> {
@@ -59,7 +60,7 @@ namespace Journals.Client {
 
         private async Task LoadFromDB(bool invokeRequired = false) {
 
-            var dbJournals = await _dao.FindByQuery<Journal>("from Journal");
+            var dbJournals = await _dao.FindByQuery<ClientJournalDto>(ClientJournalDto.ByUser);
 
             if (invokeRequired) {
                 this.Invoke(new MethodInvoker(delegate {
@@ -72,7 +73,7 @@ namespace Journals.Client {
 
         }
 
-        private void DoUpdateListView(IList<Journal> dbJournals)
+        private void DoUpdateListView(IList<ClientJournalDto> dbJournals)
         {
             Cursor.Current = Cursors.WaitCursor;
             listView1.Items.Clear();
@@ -84,6 +85,7 @@ namespace Journals.Client {
                 listitem.Tag = item.Id;
                 listitem.Text = item.Name;
                 listitem.SubItems.Add(item.Description);
+                listitem.SubItems.Add(item.PublicationCount.ToString());
                 listView1.Items.Add(listitem);
             }
 

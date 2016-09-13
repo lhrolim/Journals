@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Net;
 using System.Threading.Tasks;
 using journals.commons.Model.Entities;
@@ -24,7 +25,7 @@ namespace journals.commons.Util.Redis {
         public RedisService() {
             _serializer = new NewtonsoftSerializer();
             try {
-                Multiplexer = ConnectionMultiplexer.Connect("localhost:6379");
+                Multiplexer = ConnectionMultiplexer.Connect(ConfigurationManager.AppSettings["redisurl"]);
                 ServiceAvailable = true;
             } catch (Exception e) {
                 ServiceAvailable = false;

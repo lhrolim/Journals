@@ -26,7 +26,7 @@ namespace Journals.Web.Api.Controllers {
         }
 
         [HttpGet]
-        public async Task<IList<JournalDtoView>> ListJournals([FromUri]PaginationData paginationData) {
+        public async Task<IList<JournalDto>> ListJournals([FromUri]PaginationData paginationData) {
             var user = _securityFacade.CurrentUser();
             return await _webSubscriptionManager.LookupJournals(user, paginationData);
         }
