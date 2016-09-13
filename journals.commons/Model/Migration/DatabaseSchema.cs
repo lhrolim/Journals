@@ -43,6 +43,8 @@ namespace journals.commons.Model.Migration {
                 .WithColumn("user_id").AsInt32().NotNullable().ForeignKey("FK_SUB_USER", "USER", "id")
                 .WithColumn("journal_id").AsInt32().NotNullable().ForeignKey("FK_SUB_JOURNAL", "JOURNAL", "id");
 
+            Create.UniqueConstraint("uq_subscription").OnTable("SUBSCRIPTION").Columns("user_id", "journal_id");
+
             Execute.Sql(@"create or replace view subsjournals as
                          select j.id,name,description,s.subscriptiondate,s.user_id,(select count(id) from publication p where p.journal_id = j.id) as publication_count from journal j
                          left join subscription s on j.id = s.journal_id

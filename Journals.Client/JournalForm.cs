@@ -39,19 +39,25 @@ namespace Journals.Client {
 
             listView1.View = View.Details;
 
+            await _publicationSyncManager.HandleSubscriptions();
             await _publicationSyncManager.SyncData();
 
-            //load again, after sync took place
-            await LoadFromDB();
 
+            //load again, after sync took place
+//            await LoadFromDB();
+
+        }
+
+        private async void JournalForm_Shown(object sender, EventArgs e) {
+            await LoadFromDB();
         }
 
         private async Task LoadFromDB() {
 
             Cursor.Current = Cursors.WaitCursor;
             listView1.Items.Clear();
-            
-         
+
+
             var dbJournals = await _dao.FindByQuery<Journal>("from Journal");
 
             foreach (var item in dbJournals) {
@@ -83,15 +89,17 @@ namespace Journals.Client {
         }
 
         private async void button1_Click(object sender, EventArgs e) {
-            await _publicationSyncManager.SyncData();
+//            await _publicationSyncManager.SyncData();
             await LoadFromDB();
         }
 
         private void logout_Click(object sender, EventArgs e) {
             Hide();
-            
+
             _journalViewModel.Config = null;
             SimpleInjectorGenericFactory.Instance.GetObject<LoginForm>().Show();
         }
+
+      
     }
 }

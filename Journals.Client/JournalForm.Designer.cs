@@ -98,6 +98,7 @@
             this.Name = "JournalForm";
             this.Text = "My Journals";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.Shown += new System.EventHandler(this.JournalForm_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 

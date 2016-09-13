@@ -76,7 +76,7 @@ namespace Journals.Web.Api.Controllers {
         [HttpPost]
         public async Task UnSubscribe(int journalId) {
             var user = _securityFacade.CurrentUser();
-            await _webSubscriptionManager.UnSubscribe(journalId, user.UserId);
+            await _webSubscriptionManager.UnSubscribe(journalId, user);
         }
 
     }

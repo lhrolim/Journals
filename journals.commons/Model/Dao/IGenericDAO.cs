@@ -21,7 +21,7 @@ namespace journals.commons.Model.dao {
 
         Task Delete(object ob);
 
-        Task<T> FindByPk<T>(Type type, object id, params string[] toEager);
+        Task<T> FindByPk<T>(object id, params string[] toEager);
 
         Task<int> CountByQuery(string queryst, params object[] parameters);
 
@@ -33,6 +33,8 @@ namespace journals.commons.Model.dao {
 
 
         Task<int> ExecuteSql(string sql, params object[] parameters);
+
+        Task<int> ExecuteSql(string sql,ISession session, params object[] parameters);
 
         ISession GetSession();
     }

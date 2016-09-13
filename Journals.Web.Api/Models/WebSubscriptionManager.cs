@@ -9,6 +9,7 @@ using journals.commons.Model.Manager;
 using journals.commons.Security;
 using journals.commons.SimpleInjector;
 using journals.commons.Util;
+using journals.commons.Util.Redis;
 
 namespace Journals.Web.Api.Models {
 
@@ -17,25 +18,35 @@ namespace Journals.Web.Api.Models {
         private readonly ISecurityFacade _securityFacade;
         private readonly IGenericDao _dao;
         private readonly PublicationManager _publicationManager;
+        private readonly RedisService _redisService;
 
-        public WebSubscriptionManager(ISecurityFacade securityFacade, IGenericDao dao, PublicationManager publicationManager) : base(dao) {
+        public WebSubscriptionManager(ISecurityFacade securityFacade, IGenericDao dao, PublicationManager publicationManager, RedisService redisService) : base(dao) {
             _securityFacade = securityFacade;
             _dao = dao;
             _publicationManager = publicationManager;
+            _redisService = redisService;
+
         }
 
 
         public async Task Subscribe(int journalId) {
             var user = _securityFacade.CurrentUser();
+
             var subscription = new Subscription() { Journal = new Journal() { Id = journalId }, User = new User() { Id = user.UserId } };
-            //TODO: notify clients
             await _dao.Save(subscription);
+            var journal = await _dao.FindByPk<Journal>(journalId,"Publications");
+            //to avoid serializing it
+            journal.Subscriptions = null;
+
+            await _redisService.PublishNewSubscription(journal, user.UserName);
         }
 
 
 
-        public async Task<bool> UnSubscribe(int journalId, int userId) {
-            return await _dao.ExecuteSql("delete from Subscription where journal_id = ? and user_id = ? ", journalId, userId) > 0;
+        public async Task<bool> UnSubscribe(int journalId, UserIdentity user) {
+            var deletionResult = await _dao.ExecuteSql("delete from Subscription where journal_id = ? and user_id = ? ", journalId, user.UserId) > 0;
+            await _redisService.PublishNewUnSubscription(journalId, user.UserName);
+            return deletionResult;
         }
 
         public async Task<Publication> AddPublication(Publication publication, int journalId, string base64Data) {
@@ -43,7 +54,9 @@ namespace Journals.Web.Api.Models {
 
 
             var savedPublication = await _publicationManager.SavePublication(publication, base64Data);
-            //TODO: notify clients
+
+            await _redisService.PublishIntoJournal(publication, journalId);
+
             return savedPublication;
         }
 

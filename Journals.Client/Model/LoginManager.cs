@@ -50,6 +50,7 @@ namespace Journals.Client.Model {
                 Url = serverUrl,
             };
 
+            _jvm.UserName = userName;
             _jvm.Config = config;
             
             await _dao.Save(config);

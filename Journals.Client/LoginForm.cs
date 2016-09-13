@@ -45,7 +45,7 @@ namespace Journals.Client {
 
                 Hide();
 
-                _journalsForm.Show();
+                _journalsForm.ShowDialog();
             } catch (Exception ex) {
                 MessageBox.Show("The user name or password is incorrect.");
             }

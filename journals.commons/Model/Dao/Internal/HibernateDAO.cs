@@ -26,6 +26,8 @@ namespace journals.commons.Model.Dao.Internal {
         }
 
 
+      
+
         public ISession GetSession() {
             return _sessionManager.OpenSession();
         }
@@ -89,10 +91,10 @@ namespace journals.commons.Model.Dao.Internal {
             }
         }
 
-        public async Task<T> FindByPk<T>(Type type, object id, params string[] toEager) {
+        public async Task<T> FindByPk<T>(object id, params string[] toEager) {
             using (var session = GetSession()) {
                 using (session.BeginTransaction()) {
-                    var ob = await session.LoadAsync(type, id);
+                    var ob = await session.LoadAsync(typeof(T), id);
                     for (var i = 0; i < toEager.Length; i++) {
                         var property = ReflectionUtil.GetProperty(ob, toEager[i]);
                         NHibernateUtil.Initialize(property);
@@ -154,6 +156,22 @@ namespace journals.commons.Model.Dao.Internal {
 
                     return result;
                 }
+            }
+        }
+
+        public async Task<int> ExecuteSql(string sql, ISession session, params object[] parameters) {
+            using (var transaction = session.BeginTransaction()) {
+
+                var query = session.CreateSQLQuery(sql);
+                if (parameters != null) {
+                    for (int i = 0; i < parameters.Length; i++) {
+                        query.SetParameter(i, parameters[i]);
+                    }
+                }
+                var result = await query.ExecuteUpdateAsync();
+                transaction.Commit();
+
+                return result;
             }
         }
 
