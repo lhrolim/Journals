@@ -1,0 +1,18 @@
+# Local-only VS/Re#/etc files
+*.suo
+*.user
+!softwrench.sw4.user/
+*.apk
+*.nupkg
+*.gpState
+_ReSharper.*
+UpgradeLog2.*
+.*.swp
+/Auth.targets
+.DS_Store
+Thumbs.db
+/.vs
+packages
+bin
+obj
+TestResults

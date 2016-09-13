@@ -1,0 +1,39 @@
+﻿<div class="row">
+    <div class="col-md-2">
+        &nbsp;
+    </div>
+    <div class="col-md-8" ng-if="!vm.editing">
+
+        <button ng-click="addJournal()" class="btn btn-info" ng-if="isPublisher()">Add Journal</button>
+
+        <div ui-grid="vm.journals" ui-grid-pagination class="grid"></div>
+
+    </div>
+
+    <div class="col-md-8" ng-if="vm.editing">
+        <form role="form">
+            <div class="row">
+                <div class="col-md-2">
+                    &nbsp;
+                </div>
+                <div class="col-md-4">
+                    <h2 class="form-login-heading">Create a Journal</h2>
+                    <input type="text" class="form-control" placeholder="title" data-ng-model="vm.currentJournal.name" required autofocus>
+                    <textarea class="form-control" placeholder="description" data-ng-model="vm.currentJournal.description" required> </textarea>
+                    <button class="btn btn-md btn-info btn-block" type="submit" ng-click="saveJournal()">Save</button>
+                    <button class="btn btn-md btn-info btn-block" type="button" ng-click="cancel()">Cancel</button>
+                </div>
+                <div class="col-md-2">
+                    &nbsp;
+                </div>
+            </div>
+        </form>
+      
+
+    </div>
+
+
+    <div class="col-md-2">
+        &nbsp;
+    </div>
+</div>
