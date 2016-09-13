@@ -1,24 +1,29 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using journals.commons.Model.dao;
 using journals.commons.Model.Entities;
 using journals.commons.SimpleInjector;
+using journals.commons.Util.Redis;
 using Journals.Client.Model;
 
 namespace Journals.Client {
-    public partial class JournalForm : Form, ISingletonComponent {
+    public partial class JournalForm : Form, ISingletonComponent, IEventListener<RefreshJournalsEvent> {
 
         private readonly IGenericDao _dao;
         private readonly JournalViewModel _journalViewModel;
         private readonly PublicationForm _publicationForm;
         private readonly PublicationSyncManager _publicationSyncManager;
+        private readonly RedisService _redisService;
 
-        public JournalForm(IGenericDao dao, JournalViewModel journalViewModel, PublicationForm publicationForm, PublicationSyncManager publicationSyncManager) {
+
+        public JournalForm(IGenericDao dao, JournalViewModel journalViewModel, PublicationForm publicationForm, PublicationSyncManager publicationSyncManager, RedisService redisService) {
             _dao = dao;
             _journalViewModel = journalViewModel;
             _publicationForm = publicationForm;
             _publicationSyncManager = publicationSyncManager;
+            _redisService = redisService;
             InitializeComponent();
             InitListView();
         }
@@ -44,7 +49,7 @@ namespace Journals.Client {
 
 
             //load again, after sync took place
-//            await LoadFromDB();
+            //            await LoadFromDB();
 
         }
 
@@ -52,15 +57,29 @@ namespace Journals.Client {
             await LoadFromDB();
         }
 
-        private async Task LoadFromDB() {
+        private async Task LoadFromDB(bool invokeRequired = false) {
 
+            var dbJournals = await _dao.FindByQuery<Journal>("from Journal");
+
+            if (invokeRequired) {
+                this.Invoke(new MethodInvoker(delegate {
+                    DoUpdateListView(dbJournals);
+                }));
+            } else {
+                DoUpdateListView(dbJournals);
+            }
+            
+
+        }
+
+        private void DoUpdateListView(IList<Journal> dbJournals)
+        {
             Cursor.Current = Cursors.WaitCursor;
             listView1.Items.Clear();
 
 
-            var dbJournals = await _dao.FindByQuery<Journal>("from Journal");
-
-            foreach (var item in dbJournals) {
+            foreach (var item in dbJournals)
+            {
                 var listitem = new ListViewItem();
                 listitem.Tag = item.Id;
                 listitem.Text = item.Name;
@@ -89,7 +108,9 @@ namespace Journals.Client {
         }
 
         private async void button1_Click(object sender, EventArgs e) {
-//            await _publicationSyncManager.SyncData();
+            if (!_redisService.ServiceAvailable) {
+                await _publicationSyncManager.SyncData();
+            }
             await LoadFromDB();
         }
 
@@ -100,6 +121,9 @@ namespace Journals.Client {
             SimpleInjectorGenericFactory.Instance.GetObject<LoginForm>().Show();
         }
 
-      
+
+        public async void HandleEvent(RefreshJournalsEvent eventToDispatch) {
+            await LoadFromDB(true);
+        }
     }
 }

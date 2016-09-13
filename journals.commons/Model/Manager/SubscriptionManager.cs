@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using journals.commons.Model.dao;
-using journals.commons.Model.Dao.Internal;
 using journals.commons.Model.Entities;
 using journals.commons.Security;
 using journals.commons.SimpleInjector;

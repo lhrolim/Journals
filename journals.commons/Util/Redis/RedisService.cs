@@ -15,6 +15,8 @@ namespace journals.commons.Util.Redis {
 
         private readonly NewtonsoftSerializer _serializer;
 
+        public bool ServiceAvailable {get;set;}
+
         public ConnectionMultiplexer Multiplexer {
             get; set;
         }
@@ -23,7 +25,9 @@ namespace journals.commons.Util.Redis {
             _serializer = new NewtonsoftSerializer();
             try {
                 Multiplexer = ConnectionMultiplexer.Connect("localhost:6379");
+                ServiceAvailable = true;
             } catch (Exception e) {
+                ServiceAvailable = false;
                 _log.WarnFormat("Redis is not available for pub/sub operations");
             }
 

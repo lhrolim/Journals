@@ -21,13 +21,15 @@ namespace Journals.Client.Model {
         private readonly RestService _restService;
         private readonly RedisService _redisService;
         private readonly NewtonsoftSerializer _newtonsoftSerializer;
+        private ISimpleInjectorDomainEventDispatcher _dispatcher;
 
 
-        public PublicationSyncManager(IGenericDao dao, JournalViewModel jvm, RestService restService, RedisService redisService) {
+        public PublicationSyncManager(IGenericDao dao, JournalViewModel jvm, RestService restService, RedisService redisService, ISimpleInjectorDomainEventDispatcher dispatcher) {
             _dao = dao;
             _jvm = jvm;
             _restService = restService;
             _redisService = redisService;
+            _dispatcher = dispatcher;
             _newtonsoftSerializer = new NewtonsoftSerializer(new JsonSerializerSettings() { });
 
         }
@@ -37,10 +39,10 @@ namespace Journals.Client.Model {
             await _redisService.SubscriptionAdded(_jvm.UserName, async (channel, message) => {
                 var newJournal = _newtonsoftSerializer.Deserialize<Journal>(message);
                 await _dao.Save(newJournal);
-
+                
                 //subscribing to receive publications of this new journal
                 await SubscribeToJournal(newJournal);
-
+                _dispatcher.Dispatch(new RefreshJournalsEvent());
             });
 
             await _redisService.SubscriptionRemoved(_jvm.UserName, async (channel, message) => {
@@ -58,6 +60,7 @@ namespace Journals.Client.Model {
 
                 //Cancelling Journal subscription
                 await _redisService.UnSubscribeToJournal(journalId);
+                _dispatcher.Dispatch(new RefreshJournalsEvent());
 
             });
 
@@ -75,6 +78,7 @@ namespace Journals.Client.Model {
             await _redisService.SubscribeToJournal(journal.Id.Value, (channel2, message2) => {
                 var newPublication = _newtonsoftSerializer.Deserialize<Publication>(message2);
                 _dao.Save(newPublication);
+                _dispatcher.Dispatch(new RefreshJournalsEvent());
             });
         }
 

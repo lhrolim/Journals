@@ -139,6 +139,7 @@
     <Compile Include="Model\Migration\ClientDatabaseSchema.cs" />
     <Compile Include="Model\PdfLoaderManager.cs" />
     <Compile Include="Model\PublicationSyncManager.cs" />
+    <Compile Include="Model\RefreshJournalsEvent.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicationForm.cs">

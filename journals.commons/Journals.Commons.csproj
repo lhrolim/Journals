@@ -115,8 +115,11 @@
     <Compile Include="Security\ISecurityFacade.cs" />
     <Compile Include="Security\SecurityException.cs" />
     <Compile Include="Security\UserIdentity.cs" />
-    <Compile Include="SimpleInjector\IComponent.cs" />
-    <Compile Include="SimpleInjector\ISingletonComponent.cs" />
+    <Compile Include="SimpleInjector\api\IComponent.cs" />
+    <Compile Include="SimpleInjector\api\IEventHandler.cs" />
+    <Compile Include="SimpleInjector\api\ISingletonComponent.cs" />
+    <Compile Include="SimpleInjector\ISimpleInjectorDomainEventDispatcher.cs" />
+    <Compile Include="SimpleInjector\SimpleInjectorEventDispatcher.cs" />
     <Compile Include="SimpleInjector\SimpleInjectorGenericFactory.cs" />
     <Compile Include="SimpleInjector\SimpleInjectorScanner.cs" />
     <Compile Include="Util\AssemblyUtil.cs" />
